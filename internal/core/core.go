@@ -20,12 +20,16 @@ const (
 )
 
 const (
-	InitCartNumber CardNumber = 7
+	InitCardNumber CardNumber = 7
+	// MaxCardNumber == K
+	MaxCardNumber CardNumber = 13
+	// MinCardNumber == A
+	MinCardNumber CardNumber = 1
 )
 
 type MSets struct {
 	sets    map[Kind]*list.List
-	dropped map[string][]CardNumber
+	dropped map[Kind][]CardNumber
 }
 
 var (
@@ -42,7 +46,7 @@ func NewMSets() *MSets {
 			KindGrassFlower: list.New(),
 			KindCube:        list.New(),
 		},
-		dropped: make(map[string][]CardNumber),
+		dropped: make(map[Kind][]CardNumber),
 	}
 }
 
@@ -56,7 +60,7 @@ func (ms *MSets) Insert(kind Kind, number CardNumber) error {
 	}
 	max := l.Back().Value
 	if max == nil {
-		max = CardNumber(7)
+		max = InitCardNumber
 	}
 	maxNum, ok := max.(CardNumber)
 	if !ok {
@@ -64,16 +68,16 @@ func (ms *MSets) Insert(kind Kind, number CardNumber) error {
 	}
 	min := l.Front().Value
 	if min == nil {
-		min = CardNumber(7)
+		min = InitCardNumber
 	}
 	minNum, ok := min.(CardNumber)
 	if !ok {
 		return ErrInsertInvalid
 	}
-	if number > 7 && number == maxNum+1 {
+	if number > InitCardNumber && number == maxNum+1 {
 		l.PushBack(number)
 	}
-	if number <= 7 && number == minNum-1 {
+	if number <= InitCardNumber && number == minNum-1 {
 		l.PushFront(number)
 	}
 
@@ -81,7 +85,7 @@ func (ms *MSets) Insert(kind Kind, number CardNumber) error {
 }
 
 func isNumValid(num CardNumber) bool {
-	return num > 0 && num < 14
+	return num > 0 && num < MaxCardNumber+1
 }
 
 func (ms *MSets) Find(kind Kind) (CardNumber, CardNumber, error) {
@@ -90,7 +94,7 @@ func (ms *MSets) Find(kind Kind) (CardNumber, CardNumber, error) {
 		return 0, 0, ErrKindNotFound
 	}
 	if l.Len() == 0 {
-		return InitCartNumber, InitCartNumber, nil
+		return InitCardNumber, InitCardNumber, nil
 	}
 	return l.Front().Value.(CardNumber), l.Back().Value.(CardNumber), nil
 }
@@ -110,4 +114,11 @@ func (ms *MSets) GetValidNums(kind Kind, nums []CardNumber) (map[Kind][]CardNumb
 	res[kind] = validNums
 
 	return res, nil
+}
+
+func (ms *MSets) AddDroppedNum(kind Kind, num CardNumber) {
+	if _, ok := ms.dropped[kind]; !ok {
+		return
+	}
+	ms.dropped[kind] = append(ms.dropped[kind], num)
 }
