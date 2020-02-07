@@ -21,3 +21,7 @@ func AssignCards(players int) []*Card {
 	total := len(allCards) / players
 	return GetRandomCards(total)
 }
+
+func PrintPoolStatus() string {
+	return getCardPool().PrintStatus()
+}

@@ -1,8 +1,10 @@
 package core
 
 import (
+	"bytes"
 	"container/list"
 	"errors"
+	"fmt"
 )
 
 type Kind uint8
@@ -36,6 +38,7 @@ var (
 	ErrInsertInvalid = errors.New("msets: insert failed")
 	ErrInvalidCard   = errors.New("msets: validator: invalid card number")
 	ErrKindNotFound  = errors.New("msets: find: kind not found")
+	ErrSkipNoFirst7  = errors.New("msets: validator: no 7 set")
 )
 
 func NewMSets() *MSets {
@@ -57,6 +60,10 @@ func (ms *MSets) Insert(kind Kind, number CardNumber) error {
 	l, ok := ms.sets[kind]
 	if !ok {
 		return ErrInsertInvalid
+	}
+	if l.Len() == 0 {
+		l.PushBack(InitCardNumber)
+		return nil
 	}
 	max := l.Back().Value
 	if max == nil {
@@ -94,9 +101,36 @@ func (ms *MSets) Find(kind Kind) (CardNumber, CardNumber, error) {
 		return 0, 0, ErrKindNotFound
 	}
 	if l.Len() == 0 {
-		return InitCardNumber, InitCardNumber, nil
+		return 0, 0, nil
 	}
 	return l.Front().Value.(CardNumber), l.Back().Value.(CardNumber), nil
+}
+
+func (ms *MSets) PrintStatus() string {
+	var status bytes.Buffer
+	for kind, l := range ms.sets {
+		var kindStatus bytes.Buffer
+		for node := l.Front(); node != nil; node = node.Next() {
+			labelStr := CardNumberLabel[node.Value.(CardNumber)]
+			if node != l.Back() {
+				kindStatus.WriteString(fmt.Sprintf("%s -> ", labelStr))
+			} else {
+				kindStatus.WriteString(labelStr)
+			}
+		}
+		lableKindStr := CardKindLabel[kind]
+		status.WriteString(fmt.Sprintf("Kind: %s, List: %s\n", lableKindStr, kindStatus.String()))
+	}
+	status.WriteString("Dropped: \n")
+	for kind, numbers := range ms.dropped {
+		status.WriteString(fmt.Sprintf("Kind: %s, Numbers:%v\n", CardKindLabel[kind], numbers))
+	}
+	return status.String()
+}
+
+func (ms *MSets) IsFirst7Set() bool {
+	l := ms.sets[KindBlackHeart]
+	return l.Len() >= 1
 }
 
 func (ms *MSets) GetValidNums(kind Kind, nums []CardNumber) (map[Kind][]CardNumber, error) {
@@ -105,20 +139,33 @@ func (ms *MSets) GetValidNums(kind Kind, nums []CardNumber) (map[Kind][]CardNumb
 	if err != nil {
 		return nil, err
 	}
+	if !ms.IsFirst7Set() {
+		// allows first 7
+		if kind == KindBlackHeart {
+			for _, num := range nums {
+				if num == InitCardNumber {
+					res[kind] = []CardNumber{InitCardNumber}
+					return res, nil
+				}
+			}
+		} else {
+			return nil, ErrSkipNoFirst7
+		}
+	}
 	var validNums []CardNumber
 	for _, num := range nums {
-		if num == min-1 || num == max+1 {
+		if (num == min-1 || num == max+1) && (max > 0 && min > 0) {
+			validNums = append(validNums, num)
+		}
+		if num == InitCardNumber {
 			validNums = append(validNums, num)
 		}
 	}
-	res[kind] = validNums
+	res[kind] = append(res[kind], validNums...)
 
 	return res, nil
 }
 
 func (ms *MSets) AddDroppedNum(kind Kind, num CardNumber) {
-	if _, ok := ms.dropped[kind]; !ok {
-		return
-	}
 	ms.dropped[kind] = append(ms.dropped[kind], num)
 }

@@ -26,14 +26,19 @@ var autoCmd = &cobra.Command{
 	Use:   "auto",
 	Short: "Auto play pai7 for testing purpose",
 	Run: func(cmd *cobra.Command, args []string) {
+		auto.InitPlayers()
+	assign:
 		game.InitGame()
-		for _, p := range auto.Players {
-			gotCards := game.AssignCards(len(auto.Players))
-			logrus.Infof("cmd: auto: player: %s,cards: %d", p, len(gotCards))
-			auto.PlayersCards[p] = gotCards
+		for _, p := range auto.AllPlayers {
+			gotCards := game.AssignCards(len(auto.AllPlayers))
+			logrus.Debugf("cmd: auto: player: %s,cards: %d", p.Name, len(gotCards))
+			p.AssignCards(gotCards)
 		}
-
+		if !game.IfAll7Assigned() {
+			goto assign
+		}
 		auto.ShowPlayersCards()
+		auto.StartPlay()
 	},
 }
 

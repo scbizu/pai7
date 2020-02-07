@@ -1,8 +1,10 @@
 package game
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/scbizu/pai7/internal/core"
 )
@@ -16,6 +18,9 @@ type Card struct {
 }
 
 func InitCards() {
+	// empty allCards
+	allCards = []*Card{}
+	leftCards = []*Card{}
 	for i := core.MinCardNumber; i < core.MaxCardNumber+1; i++ {
 		allCards = append(
 			allCards,
@@ -25,14 +30,20 @@ func InitCards() {
 			&Card{kind: core.KindCube, number: i},
 		)
 	}
-	rand.Shuffle(len(allCards), func(i, j int) {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	r.Shuffle(len(allCards), func(i, j int) {
 		allCards[i], allCards[j] = allCards[j], allCards[i]
 	})
 	leftCards = allCards
 }
 
-func NewCard() *Card {
-	return &Card{}
+func IfAll7Assigned() bool {
+	for _, card := range leftCards {
+		if card.number == core.InitCardNumber {
+			return false
+		}
+	}
+	return true
 }
 
 func GetRandomCards(total int) []*Card {
@@ -47,40 +58,53 @@ func GetRandomCards(total int) []*Card {
 	return assigned
 }
 
-func (c *Card) Drop(kind core.Kind, num core.CardNumber) {
-	getCardPool().AddDroppedNum(kind, num)
+// GetAvaliableCards returns avaliable cards and if current turn is able to skip
+func GetAvaliableCards(cards []*Card) ([]*Card, bool, error) {
+	kindCards := make(map[core.Kind][]core.CardNumber)
+	for _, card := range cards {
+		kindCards[card.kind] = append(kindCards[card.kind], card.number)
+	}
+
+	var resCards []*Card
+	var isSkipTurn bool
+	for kind, numbers := range kindCards {
+		ava, err := getCardPool().GetValidNums(kind, numbers)
+		if err != nil {
+			if errors.Is(err, core.ErrSkipNoFirst7) {
+				// skip turn
+				isSkipTurn = true
+				continue
+			}
+			return nil, false, err
+		}
+		numbers := ava[kind]
+		for _, num := range numbers {
+			resCards = append(resCards, &Card{
+				kind:   kind,
+				number: num,
+			})
+		}
+	}
+	if len(resCards) == 0 && isSkipTurn {
+		return resCards, true, nil
+	}
+	return resCards, false, nil
 }
 
-func (c *Card) Play(kind core.Kind, num core.CardNumber) error {
-	return getCardPool().Insert(
-		kind,
-		num,
+func (c *Card) Drop() {
+	getCardPool().AddDroppedNum(
+		c.kind,
+		c.number,
 	)
 }
 
-var CardNumberLabel = map[core.CardNumber]string{
-	1:  "A",
-	2:  "2",
-	3:  "3",
-	4:  "4",
-	5:  "5",
-	6:  "6",
-	7:  "7",
-	8:  "8",
-	9:  "9",
-	10: "10",
-	11: "J",
-	12: "Q",
-	13: "K",
-}
-
-var CardKindLabel = map[core.Kind]string{
-	core.KindRedHeart:    "❤️",
-	core.KindBlackHeart:  "🖤",
-	core.KindGrassFlower: "♣️",
-	core.KindCube:        "♦️",
+func (c *Card) Play() error {
+	return getCardPool().Insert(
+		c.kind,
+		c.number,
+	)
 }
 
 func (c Card) Label() string {
-	return fmt.Sprintf("%s%s", CardKindLabel[c.kind], CardNumberLabel[c.number])
+	return fmt.Sprintf("%s%s", core.CardKindLabel[c.kind], core.CardNumberLabel[c.number])
 }
