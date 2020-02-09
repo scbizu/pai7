@@ -1,0 +1,147 @@
+package game
+
+import (
+	"fmt"
+	"strconv"
+	"strings"
+
+	api "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/scbizu/pai7/internal/core"
+	"github.com/scbizu/pai7/internal/game/i18n"
+)
+
+type ActionType uint8
+
+const (
+	ActionTypePlay ActionType = iota
+	ActionTypeDrop
+	ActionTypeSkip
+)
+
+func InlineHandler(msg api.Update) ([]interface{}, error) {
+	g, err := GetGame()
+	if err != nil {
+		return nil, err
+	}
+
+	user := msg.InlineQuery.From.UserName
+
+	cards, isSkip, err := g.GetPlayerAvaliableCards(user)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []api.InlineQueryResultArticle
+
+	if isSkip {
+		items = append(items, api.NewInlineQueryResultArticle(
+			encodeResultID(
+				ActionTypeSkip, user, nil, 0,
+			), "pai7 cards", "Skip Turn"))
+	}
+
+	for idx, card := range cards {
+		items = append(items, api.NewInlineQueryResultArticle(
+			encodeResultID(ActionTypePlay, user, card, idx),
+			"pai7 cards(play)",
+			card.Label(),
+		))
+	}
+
+	if len(items) == 0 {
+		for idx, card := range cards {
+			items = append(items, api.NewInlineQueryResultArticle(
+				encodeResultID(ActionTypeDrop, user, card, idx),
+				"pai7 cards(drop)",
+				card.Label(),
+			))
+		}
+	}
+
+	var resItems []interface{}
+
+	for _, item := range items {
+		resItems = append(resItems, item)
+	}
+
+	return resItems, nil
+}
+
+func encodeResultID(at ActionType, playerName string, card *Card, index int) string {
+	return fmt.Sprintf("%d-%s-%d/%d-%d", at, playerName, card.kind, card.number, index)
+}
+
+func decodeResultID(id string) (ActionType, string, *Card, error) {
+	ps := strings.Split(id, "-")
+	if len(ps) != 4 {
+		return ActionTypeDrop, "", nil, fmt.Errorf("game: inlineHandler: decode ResultID: expected 4 parts, got %d parts", len(ps))
+	}
+	t, err := strconv.ParseInt(ps[0], 10, 64)
+	if err != nil {
+		return ActionTypeDrop, "", nil, fmt.Errorf("game: inlineHandler: decode ResultID: %q", err)
+	}
+	las := strings.Split(ps[2], "/")
+	kind, err := strconv.ParseInt(las[0], 10, 64)
+	if err != nil {
+		return ActionTypeDrop, "", nil, fmt.Errorf("game: inlineHandler: decode ResultID: %q", err)
+	}
+	number, err := strconv.ParseInt(las[1], 10, 64)
+	if err != nil {
+		return ActionTypeDrop, "", nil, fmt.Errorf("game: inlineHandler: decode ResultID: %q", err)
+	}
+	return ActionType(t), ps[1], &Card{kind: core.Kind(kind), number: core.CardNumber(number)}, nil
+}
+
+func OnChosenInlineMsgHander(res *api.ChosenInlineResult, bot *api.BotAPI) error {
+
+	g, err := GetGame()
+	if err != nil {
+		return err
+	}
+
+	action, user, card, err := decodeResultID(res.ResultID)
+	if err != nil {
+		return err
+	}
+
+	switch action {
+	case ActionTypeDrop:
+		if err := g.PlayerDropsCard(user, card); err != nil {
+			return err
+		}
+		if _, err := bot.Send(api.NewMessage(g.GetChatID(),
+			i18n.NewGameMessageDropCNZH(user))); err != nil {
+			return err
+		}
+		if _, err := bot.Send(api.NewMessage(g.GetChatID(),
+			i18n.NewGameMessageNextPlayerCNZH(g.GetNextPlayer(user).Name))); err != nil {
+			return err
+		}
+	case ActionTypePlay:
+		if err := g.PlayerPlaysCard(user, card); err != nil {
+			return err
+		}
+		if _, err := bot.Send(api.NewMessage(g.GetChatID(),
+			i18n.NewGameMessagePlayCNZH(user, card.Label()))); err != nil {
+			return err
+		}
+		if _, err := bot.Send(api.NewMessage(g.GetChatID(),
+			i18n.NewGameMessageNextPlayerCNZH(g.GetNextPlayer(user).Name))); err != nil {
+			return err
+		}
+	case ActionTypeSkip:
+		if err := g.PlayerSkipTurn(); err != nil {
+			return err
+		}
+		if _, err := bot.Send(api.NewMessage(g.GetChatID(),
+			i18n.NewGameMessageSkipCNZH(user))); err != nil {
+			return err
+		}
+		if _, err := bot.Send(api.NewMessage(g.GetChatID(),
+			i18n.NewGameMessageNextPlayerCNZH(g.GetNextPlayer(user).Name))); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

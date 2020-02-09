@@ -5,13 +5,13 @@ import (
 	"github.com/scbizu/pai7/internal/game/i18n"
 )
 
-func Start() CommandHandleFunc {
+func Drop() CommandHandleFunc {
 	return CommandHandleFunc(func(msg *api.Message) (api.Chattable, error) {
 		g, err := GetGame()
 		if err != nil {
 			return api.MessageConfig{}, i18n.Err(err)
 		}
-		g.Start()
-		return api.NewMessage(msg.Chat.ID, i18n.NewGameMessageStartCNZH()), nil
+		g.Close()
+		return api.NewMessage(msg.Chat.ID, g.Status()), nil
 	})
 }

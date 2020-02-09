@@ -19,6 +19,8 @@ import (
 	"os"
 
 	"github.com/scbizu/mytg"
+	"github.com/scbizu/pai7/internal/game"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -50,8 +52,19 @@ func registerTelegramServer() error {
 	if err != nil {
 		return fmt.Errorf("register: %w", err)
 	}
-	if err := bot.ServeBotUpdateMessage(); err != nil {
-		return fmt.Errorf("register: onUpdate Message: %w", err)
-	}
+	bot.RegisterWebhook()
+	go func() {
+		if err := bot.ServeBotUpdateMessage(); err != nil {
+			logrus.Errorf("register: onUpdate Message: %q", err)
+			return
+		}
+	}()
+
+	go func() {
+		if err := bot.ServeInlineMode(game.InlineHandler, game.OnChosenInlineMsgHander); err != nil {
+			logrus.Errorf("register: onUpdate Inline Message: %q", err)
+			return
+		}
+	}()
 	return nil
 }

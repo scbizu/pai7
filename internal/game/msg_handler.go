@@ -14,19 +14,19 @@ type P7Plugin struct {
 }
 
 // HandleMessage handles telegram game messages
-func (p *P7Plugin) HandleMessage(incommingMsg *api.Message) (*api.MessageConfig, error) {
+func (p *P7Plugin) HandleMessage(incommingMsg *api.Message) (api.Chattable, error) {
 	if !incommingMsg.IsCommand() {
-		return nil, plugin.ErrMessageNotMatched
+		return api.MessageConfig{}, plugin.ErrMessageNotMatched
 	}
 
 	cmd, ok := LabelToCommand[incommingMsg.Command()]
 	if !ok {
-		return nil, plugin.ErrMessageNotMatched
+		return api.MessageConfig{}, plugin.ErrMessageNotMatched
 	}
 
 	fn, ok := CommandHandler[cmd]
 	if !ok {
-		return nil, plugin.ErrMessageNotMatched
+		return api.MessageConfig{}, plugin.ErrMessageNotMatched
 	}
 
 	return fn(incommingMsg)
