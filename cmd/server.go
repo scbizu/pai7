@@ -60,11 +60,8 @@ func registerTelegramServer() error {
 		}
 	}()
 
-	go func() {
-		if err := bot.ServeInlineMode(game.InlineHandler, game.OnChosenInlineMsgHander); err != nil {
-			logrus.Errorf("register: onUpdate Inline Message: %q", err)
-			return
-		}
-	}()
+	if err := bot.ServeInlineMode(game.InlineHandler, game.OnChosenInlineMsgHander); err != nil {
+		return fmt.Errorf("register: onUpdate Inline Message: %q", err)
+	}
 	return nil
 }
