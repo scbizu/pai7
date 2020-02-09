@@ -6,10 +6,10 @@ ADD . /project/pai7
 
 RUN export GO11MODULE="on" && go build -o pai7 .
 
-FROM golang:1.13
+FROM alpine:latest
 
 WORKDIR /tmp
 
 COPY --from=BUILDER /project/pai7/pai7 /tmp/pai7
 
-CMD [ "/tmp/pai7 server" ]
+ENTRYPOINT ["/tmp/pai7", "server"]
