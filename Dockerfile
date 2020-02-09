@@ -8,6 +8,8 @@ RUN export GO11MODULE="on" && go build -o pai7 .
 
 FROM alpine:latest
 
-COPY --from=BUILDER /project/pai7/pai7 /tmp/pai7
+RUN mkdir /app
 
-ENTRYPOINT ["/tmp/pai7", "server"]
+COPY --from=BUILDER /project/pai7/pai7 /app/api7
+
+ENTRYPOINT ["/app/pai7", "server"]
