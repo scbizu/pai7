@@ -12,4 +12,4 @@ WORKDIR /tmp
 
 COPY --from=BUILDER /project/pai7/pai7 /tmp/pai7
 
-ENTRYPOINT ["/tmp/pai7", "server"]
+ENTRYPOINT ["./pai7", "server"]
