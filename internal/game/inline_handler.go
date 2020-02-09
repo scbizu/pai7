@@ -21,17 +21,19 @@ const (
 func InlineHandler(msg api.Update) ([]interface{}, error) {
 	g, err := GetGame()
 	if err != nil {
-		return nil, err
+		item := api.NewInlineQueryResultArticle(
+			"game_not_found", "error", "没有游戏进行中哦",
+		)
+		return []interface{}{item}, nil
 	}
 
+	var items []api.InlineQueryResultArticle
 	user := msg.InlineQuery.From.UserName
 
 	cards, isSkip, err := g.GetPlayerAvaliableCards(user)
 	if err != nil {
 		return nil, err
 	}
-
-	var items []api.InlineQueryResultArticle
 
 	if isSkip {
 		items = append(items, api.NewInlineQueryResultArticle(

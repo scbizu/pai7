@@ -18,16 +18,6 @@ const (
 	CMDEndGame
 	// CMDGameStatus show current game status
 	CMDGameStatus
-	// CMDCoverCard covers the card
-	CMDDropCard
-	// CMDDoubt call someone's buff
-	CMDDoubt
-	// CMDMyCards shows my cards
-	CMDMyCards
-	// CMDPlayCards plays one's card to the card  pool
-	CMDPlayCard
-	// CMDCommands make py with BotFather
-	CMDCommands
 )
 
 var (
@@ -37,22 +27,22 @@ var (
 		CMDStartGame:  "/start",
 		CMDEndGame:    "/end",
 		CMDGameStatus: "/status",
-		CMDDropCard:   "/drop_card",
-		CMDDoubt:      "/doubt",
-		CMDMyCards:    "/my_cards",
-		CMDPlayCard:   "/play_card",
 	}
 
 	LabelToCommand = map[string]Command{
-		"/new":       CMDNewGame,
-		"/join":      CMDJoinGame,
-		"/start":     CMDStartGame,
-		"/end":       CMDEndGame,
-		"/status":    CMDGameStatus,
-		"/drop_card": CMDDropCard,
-		"/doubt":     CMDDoubt,
-		"/my_cards":  CMDMyCards,
-		"/play_card": CMDPlayCard,
+		"/new":    CMDNewGame,
+		"/join":   CMDJoinGame,
+		"/start":  CMDStartGame,
+		"/end":    CMDEndGame,
+		"/status": CMDGameStatus,
+	}
+
+	CommandsDesc = map[string]string{
+		"new":    "创建一局排7游戏",
+		"join":   "加入一局排7游戏",
+		"start":  "开始一局排7游戏",
+		"end":    "结束一局排7游戏",
+		"status": "牌局状态",
 	}
 
 	CommandHandler = map[Command]CommandHandleFunc{
@@ -61,9 +51,5 @@ var (
 		CMDStartGame:  Start(),
 		CMDEndGame:    Close(),
 		CMDGameStatus: Status(),
-		CMDDropCard:   nil,
-		CMDDoubt:      nil,
-		CMDMyCards:    nil,
-		CMDPlayCard:   nil,
 	}
 )
