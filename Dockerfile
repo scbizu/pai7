@@ -1,15 +1,11 @@
-FROM golang:1.13 AS BUILDER
+FROM golang:1.13-alpine
 
-WORKDIR /project/pai7
+WORKDIR /project
 
-ADD . /project/pai7
+ADD . .
 
-RUN export GO11MODULE="on" && go build -o pai7 .
+ENV GOPROXY=goproxy.cn
 
-FROM alpine:latest
+RUN export GO11MODULE="on" && go build -o pai7
 
-RUN mkdir /app
-
-COPY --from=BUILDER /project/pai7/pai7 /app/api7
-
-ENTRYPOINT ["/app/pai7", "server"]
+ENTRYPOINT [ "./pai7" ,"server"]
