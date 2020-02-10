@@ -53,6 +53,7 @@ func registerTelegramServer() error {
 		return fmt.Errorf("register: %w", err)
 	}
 	bot.RegisterWebhook()
+	bot.RegisterMsgChannel(mytg.MSGTypeText, mytg.MSGTypeInline)
 	go func() {
 		if err := bot.ServeBotUpdateMessage(); err != nil {
 			logrus.Errorf("register: onUpdate Message: %q", err)
