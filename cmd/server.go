@@ -47,6 +47,7 @@ func registerTelegramServer() error {
 	var debugMode bool
 	if isDebug == "true" {
 		debugMode = true
+		logrus.SetLevel(logrus.DebugLevel)
 	}
 	bot, err := mytg.NewBot(debugMode)
 	if err != nil {

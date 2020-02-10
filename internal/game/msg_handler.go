@@ -16,11 +16,12 @@ type P7Plugin struct {
 
 // HandleMessage handles telegram game messages
 func (p *P7Plugin) HandleMessage(incommingMsg *api.Message) (api.Chattable, error) {
+
+	logrus.Debugf("game: incoming message: %s", incommingMsg.Command())
+
 	if !incommingMsg.IsCommand() {
 		return api.MessageConfig{}, plugin.ErrMessageNotMatched
 	}
-
-	logrus.Debugf("game: incoming message: %s", incommingMsg.Command())
 
 	cmd, ok := LabelToCommand[incommingMsg.Command()]
 	if !ok {
