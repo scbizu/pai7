@@ -3,6 +3,7 @@ package game
 import (
 	api "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/scbizu/mytg/plugin"
+	"github.com/sirupsen/logrus"
 )
 
 func NewP7Plugin() *P7Plugin {
@@ -18,6 +19,8 @@ func (p *P7Plugin) HandleMessage(incommingMsg *api.Message) (api.Chattable, erro
 	if !incommingMsg.IsCommand() {
 		return api.MessageConfig{}, plugin.ErrMessageNotMatched
 	}
+
+	logrus.Debugf("game: incoming message: %s", incommingMsg.Command())
 
 	cmd, ok := LabelToCommand[incommingMsg.Command()]
 	if !ok {

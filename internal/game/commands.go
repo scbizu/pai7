@@ -21,20 +21,12 @@ const (
 )
 
 var (
-	CommandToLabel = map[Command]string{
-		CMDNewGame:    "/new",
-		CMDJoinGame:   "/join",
-		CMDStartGame:  "/start",
-		CMDEndGame:    "/end",
-		CMDGameStatus: "/status",
-	}
-
 	LabelToCommand = map[string]Command{
-		"/new":    CMDNewGame,
-		"/join":   CMDJoinGame,
-		"/start":  CMDStartGame,
-		"/end":    CMDEndGame,
-		"/status": CMDGameStatus,
+		"new":    CMDNewGame,
+		"join":   CMDJoinGame,
+		"start":  CMDStartGame,
+		"end":    CMDEndGame,
+		"status": CMDGameStatus,
 	}
 
 	CommandsDesc = map[string]string{
