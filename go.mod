@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
-	github.com/scbizu/mytg v0.4.0
+	github.com/scbizu/mytg v0.4.1
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.5
