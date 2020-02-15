@@ -22,7 +22,7 @@ func InlineHandler(msg api.Update) ([]interface{}, error) {
 	g, err := GetGame()
 	if err != nil {
 		item := api.NewInlineQueryResultArticle(
-			"game_not_found", "error", "没有游戏进行中哦",
+			"game_not_found", "没有加入游戏哦", "没有游戏进行中哦",
 		)
 		return []interface{}{item}, nil
 	}
@@ -35,26 +35,31 @@ func InlineHandler(msg api.Update) ([]interface{}, error) {
 		return nil, err
 	}
 
+	// Skip
+
 	if isSkip {
 		items = append(items, api.NewInlineQueryResultArticle(
 			encodeResultID(
 				ActionTypeSkip, user, nil, 0,
-			), "pai7 cards", "Skip Turn"))
+			), " 跳过回合", "Skip Turn"))
 	}
+
+	// Play
 
 	for idx, card := range cards {
 		items = append(items, api.NewInlineQueryResultArticle(
 			encodeResultID(ActionTypePlay, user, card, idx),
-			"pai7 cards(play)",
+			fmt.Sprintf("Play: %s", card.Label()),
 			card.Label(),
 		))
 	}
 
+	// Drop
 	if len(items) == 0 {
 		for idx, card := range cards {
 			items = append(items, api.NewInlineQueryResultArticle(
 				encodeResultID(ActionTypeDrop, user, card, idx),
-				"pai7 cards(drop)",
+				fmt.Sprintf("Drop: %s", card.Label()),
 				card.Label(),
 			))
 		}
