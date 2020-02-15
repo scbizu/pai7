@@ -58,6 +58,7 @@ func newGame(creator string, chatID int64) *Game {
 		pool:    core.NewMSets(),
 		creator: creator,
 		chatID:  chatID,
+		players: make(map[string]*Player),
 	}
 }
 
