@@ -12,7 +12,7 @@ func Join() CommandHandleFunc {
 			return api.MessageConfig{}, i18n.Err(err)
 		}
 		index := len(g.GetMembers()) - 1
-		p := NewPlayer(index, msg.Chat.UserName)
+		p := NewPlayer(index, msg.From.UserName)
 		g.Join(p)
 		config := api.NewMessage(msg.Chat.ID, i18n.NewGameMessageJoinCNZH(g.GetMembers()))
 		return config, nil
