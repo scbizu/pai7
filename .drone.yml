@@ -23,3 +23,14 @@ steps:
     password:
         from_secret: DOCKERHUB_PASSWORD
     dockerfile: Dockerfile
+
+- name: telegram_notification
+  image: appleboy/drone-telegram
+  settings:
+    token:
+      from_secret: BOT_TOKEN
+    to:
+      from_secret: GROUP_NAME
+    message_file: message.tpl
+    template_var:
+      app: pai7
