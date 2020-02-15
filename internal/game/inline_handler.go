@@ -107,6 +107,8 @@ func OnChosenInlineMsgHander(res *api.ChosenInlineResult, bot *api.BotAPI) error
 		return err
 	}
 
+	logrus.Debugf("onChosenHandler: ResultID:  %s", res.ResultID)
+
 	action, user, card, err := decodeResultID(res.ResultID)
 	if err != nil {
 		return err
