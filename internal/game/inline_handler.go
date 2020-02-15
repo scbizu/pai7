@@ -8,6 +8,7 @@ import (
 	api "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/scbizu/pai7/internal/core"
 	"github.com/scbizu/pai7/internal/game/i18n"
+	"github.com/sirupsen/logrus"
 )
 
 type ActionType uint8
@@ -29,7 +30,7 @@ func InlineHandler(msg api.Update) ([]interface{}, error) {
 
 	var items []api.InlineQueryResultArticle
 	user := msg.InlineQuery.From.UserName
-
+	logrus.Debugf("Inline Handler: user: %s", user)
 	cards, isSkip, err := g.GetPlayerAvaliableCards(user)
 	if err != nil {
 		return nil, err
