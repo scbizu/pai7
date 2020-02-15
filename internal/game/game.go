@@ -49,7 +49,8 @@ func NewGame(creator string, chatID int64) (*Game, error) {
 	if currentGame != nil {
 		return nil, i18n.ErrGameExisted
 	}
-	return newGame(creator, chatID), nil
+	currentGame = newGame(creator, chatID)
+	return currentGame, nil
 }
 
 func newGame(creator string, chatID int64) *Game {
