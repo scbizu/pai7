@@ -4,13 +4,11 @@ go 1.13
 
 require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
+	github.com/kr/pretty v0.1.0 // indirect
 	github.com/scbizu/mytg v0.4.1
-	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.5
-	golang.org/x/mod v0.2.0 // indirect
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
-	golang.org/x/tools v0.0.0-20200207224406-61798d64f025 // indirect
-	golang.org/x/tools/gopls v0.3.1 // indirect
-	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
+	github.com/stretchr/testify v1.4.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/yaml.v2 v2.2.4 // indirect
 )
