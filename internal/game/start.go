@@ -12,6 +12,10 @@ func Start() CommandHandleFunc {
 			return api.MessageConfig{}, i18n.Err(err)
 		}
 		g.Start()
-		return api.NewMessage(msg.Chat.ID, i18n.NewGameMessageStartCNZH()), nil
+		ms := g.GetMembers()
+		if len(ms) == 0 {
+			return api.MessageConfig{}, i18n.Err(err)
+		}
+		return api.NewMessage(msg.Chat.ID, i18n.NewGameMessageStartCNZH(ms[0])), nil
 	})
 }
