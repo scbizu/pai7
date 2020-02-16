@@ -11,7 +11,6 @@ func Status() CommandHandleFunc {
 		if err != nil {
 			return api.MessageConfig{}, i18n.Err(err)
 		}
-		g.Close()
 		return api.NewMessage(msg.Chat.ID, g.Status()), nil
 	})
 }
