@@ -29,6 +29,19 @@ func InlineHandler(msg api.Update) ([]interface{}, error) {
 	}
 
 	user := msg.InlineQuery.From.UserName
+
+	if msg.InlineQuery.Query == "my" {
+		var items []interface{}
+		for _, card := range g.GetPlayerCards(user) {
+			items = append(items, api.NewInlineQueryResultArticle(
+				"my_cards",
+				fmt.Sprintf("View: %s", card.Label()),
+				"viewing my cards...",
+			))
+		}
+		return items, nil
+	}
+
 	if g.GetCurrentPlayer().Name != user {
 		item := api.NewInlineQueryResultArticle(
 			"game_not_your_turn", "还没轮到你出牌哦", "还没轮到你出牌哦",
@@ -64,7 +77,7 @@ func InlineHandler(msg api.Update) ([]interface{}, error) {
 
 	// Drop
 	if len(items) == 0 {
-		for idx, card := range cards {
+		for idx, card := range g.GetPlayerCards(user) {
 			items = append(items, api.NewInlineQueryResultArticle(
 				encodeResultID(ActionTypeDrop, user, card, idx),
 				fmt.Sprintf("Drop: %s", card.Label()),

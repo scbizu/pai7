@@ -11,11 +11,15 @@ func Start() CommandHandleFunc {
 		if err != nil {
 			return api.MessageConfig{}, i18n.Err(err)
 		}
+		if g.IsGameStart() {
+			return api.NewMessage(msg.Chat.ID, i18n.NewGameMessageAlreadyStartCNZH()), nil
+		}
 		g.Start()
 		ms := g.GetMembers()
 		if len(ms) == 0 {
 			return api.MessageConfig{}, i18n.Err(err)
 		}
-		return api.NewMessage(msg.Chat.ID, i18n.NewGameMessageStartCNZH(ms[0])), nil
+		return api.NewMessage(msg.Chat.ID,
+			i18n.NewGameMessageStartCNZH(g.GetFirstPlayer().Name)), nil
 	})
 }

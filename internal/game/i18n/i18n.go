@@ -11,4 +11,5 @@ const (
 	GameMessageDrop
 	GameMessageSkip
 	GameMessageNextPlayer
+	GameMessageAlreadyStart
 )

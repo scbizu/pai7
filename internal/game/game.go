@@ -70,6 +70,21 @@ func (g Game) GetMembers() []string {
 	return members
 }
 
+func (g Game) GetFirstPlayer() *Player {
+	var stIndex int
+	for {
+		if len(g.players) == 0 {
+			return nil
+		}
+		for _, p := range g.players {
+			if p.index == stIndex {
+				return p
+			}
+		}
+		stIndex++
+	}
+}
+
 func (g Game) IsAllPlayerHasNoCard() bool {
 	for _, p := range g.players {
 		if len(p.cards) > 0 {
@@ -87,6 +102,10 @@ func (g *Game) Join(ps ...*Player) {
 	for _, p := range ps {
 		g.players[p.Name] = p
 	}
+}
+
+func (g *Game) IsGameStart() bool {
+	return g.isStart
 }
 
 func (g *Game) Start() {
