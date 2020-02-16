@@ -114,6 +114,8 @@ func OnChosenInlineMsgHander(res *api.ChosenInlineResult, bot *api.BotAPI) error
 		return err
 	}
 
+	next := g.GetNextPlayer(user)
+
 	switch action {
 	case ActionTypeDrop:
 		if err := g.PlayerDropsCard(user, card); err != nil {
@@ -123,8 +125,11 @@ func OnChosenInlineMsgHander(res *api.ChosenInlineResult, bot *api.BotAPI) error
 			i18n.NewGameMessageDropCNZH(user))); err != nil {
 			return err
 		}
+		if next == nil {
+			return nil
+		}
 		if _, err := bot.Send(api.NewMessage(g.GetChatID(),
-			i18n.NewGameMessageNextPlayerCNZH(g.GetNextPlayer(user).Name))); err != nil {
+			i18n.NewGameMessageNextPlayerCNZH(next.Name))); err != nil {
 			return err
 		}
 	case ActionTypePlay:
@@ -136,7 +141,7 @@ func OnChosenInlineMsgHander(res *api.ChosenInlineResult, bot *api.BotAPI) error
 			return err
 		}
 		if _, err := bot.Send(api.NewMessage(g.GetChatID(),
-			i18n.NewGameMessageNextPlayerCNZH(g.GetNextPlayer(user).Name))); err != nil {
+			i18n.NewGameMessageNextPlayerCNZH(next.Name))); err != nil {
 			return err
 		}
 	case ActionTypeSkip:
@@ -148,7 +153,7 @@ func OnChosenInlineMsgHander(res *api.ChosenInlineResult, bot *api.BotAPI) error
 			return err
 		}
 		if _, err := bot.Send(api.NewMessage(g.GetChatID(),
-			i18n.NewGameMessageNextPlayerCNZH(g.GetNextPlayer(user).Name))); err != nil {
+			i18n.NewGameMessageNextPlayerCNZH(next.Name))); err != nil {
 			return err
 		}
 	}

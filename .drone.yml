@@ -13,6 +13,13 @@ steps:
   commands:
   - go install
 
+- name: test
+  image: golang:1.13
+  environment:
+    GO111MODULE: on
+  commands:
+    - go test ./...
+
 - name: publish_dockerhub
   image: plugins/docker
   settings:
