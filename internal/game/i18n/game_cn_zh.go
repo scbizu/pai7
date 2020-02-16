@@ -13,7 +13,7 @@ var (
 		GameMessagePlay:         "@%s 出了 %s",
 		GameMessageDrop:         "@%s 盖了一张牌",
 		GameMessageSkip:         "@%s 跳过了该回合",
-		GameMessageNextPlayer:   "👉 轮到下一个玩家 @%s 出牌(请圈pai7 bot以获得出牌详情)",
+		GameMessageNextPlayer:   "👉 轮到下一个玩家 @%s 出牌(请圈 @Pai7Bot 以获得出牌详情)",
 		GameMessageAlreadyStart: "牌局已经开始，请耐心等待结束哦",
 	}
 )

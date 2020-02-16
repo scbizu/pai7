@@ -32,9 +32,9 @@ func InlineHandler(msg api.Update) ([]interface{}, error) {
 
 	if msg.InlineQuery.Query == "my" {
 		var items []interface{}
-		for _, card := range g.GetPlayerCards(user) {
+		for idx, card := range g.GetPlayerCards(user) {
 			items = append(items, api.NewInlineQueryResultArticle(
-				"my_cards",
+				fmt.Sprintf("%s_cards_%d", user, idx),
 				fmt.Sprintf("View: %s", card.Label()),
 				"viewing my cards...",
 			))

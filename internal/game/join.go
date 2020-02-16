@@ -11,6 +11,9 @@ func Join() CommandHandleFunc {
 		if err != nil {
 			return api.MessageConfig{}, i18n.Err(err)
 		}
+		if g.IsGameStart() {
+			return api.NewMessage(msg.Chat.ID, i18n.NewGameMessageAlreadyStartCNZH()), nil
+		}
 		index := len(g.GetMembers())
 		p := NewPlayer(index, msg.From.UserName)
 		g.Join(p)
