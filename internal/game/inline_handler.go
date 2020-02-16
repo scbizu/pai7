@@ -19,6 +19,10 @@ const (
 	ActionTypeSkip
 )
 
+const (
+	MaxViewCards = 15
+)
+
 func InlineHandler(msg api.Update) ([]interface{}, error) {
 	g, err := GetGame()
 	if err != nil {
@@ -38,6 +42,9 @@ func InlineHandler(msg api.Update) ([]interface{}, error) {
 				fmt.Sprintf("View: %s", card.Label()),
 				"viewing my cards...",
 			))
+		}
+		if len(items) > MaxViewCards {
+			return items[:MaxViewCards], nil
 		}
 		return items, nil
 	}
