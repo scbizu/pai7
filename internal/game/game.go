@@ -30,7 +30,6 @@ func PrintPoolStatus() string {
 var currentGame *Game
 
 type Game struct {
-	pool               *core.MSets
 	players            map[string]*Player
 	creator            string
 	isStart            bool
@@ -55,7 +54,6 @@ func NewGame(creator string, chatID int64) (*Game, error) {
 
 func newGame(creator string, chatID int64) *Game {
 	return &Game{
-		pool:    core.NewMSets(),
 		creator: creator,
 		chatID:  chatID,
 		players: make(map[string]*Player),
@@ -82,7 +80,7 @@ func (g Game) IsAllPlayerHasNoCard() bool {
 }
 
 func (g Game) GetEndReport() string {
-	return cardPool.PrintDropped()
+	return getCardPool().PrintDropped()
 }
 
 func (g *Game) Join(ps ...*Player) {
@@ -151,7 +149,7 @@ func (g *Game) GetNextPlayer(name string) *Player {
 }
 
 func (g *Game) Status() string {
-	return g.pool.PrintStatus()
+	return getCardPool().PrintStatus()
 }
 
 func (g *Game) Close() {

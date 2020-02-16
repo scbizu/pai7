@@ -138,10 +138,6 @@ func (ms *MSets) PrintStatus() string {
 		lableKindStr := CardKindLabel[kind]
 		status.WriteString(fmt.Sprintf("Kind: %s, List: %s\n", lableKindStr, kindStatus.String()))
 	}
-	// status.WriteString("Dropped: \n")
-	// for kind, numbers := range ms.dropped {
-	// 	status.WriteString(fmt.Sprintf("Kind: %s, Numbers:%v\n", CardKindLabel[kind], numbers))
-	// }
 	return status.String()
 }
 
