@@ -72,6 +72,19 @@ func (g Game) GetMembers() []string {
 	return members
 }
 
+func (g Game) IsAllPlayerHasNoCard() bool {
+	for _, p := range g.players {
+		if len(p.cards) > 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func (g Game) GetEndReport() string {
+	return cardPool.PrintDropped()
+}
+
 func (g *Game) Join(ps ...*Player) {
 	for _, p := range ps {
 		g.players[p.Name] = p

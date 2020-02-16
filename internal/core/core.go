@@ -31,7 +31,7 @@ const (
 
 type MSets struct {
 	sets    map[Kind]*list.List
-	dropped map[Kind][]CardNumber
+	dropped map[string][]CardNumber
 }
 
 var (
@@ -49,7 +49,7 @@ func NewMSets() *MSets {
 			KindGrassFlower: list.New(),
 			KindCube:        list.New(),
 		},
-		dropped: make(map[Kind][]CardNumber),
+		dropped: make(map[string][]CardNumber),
 	}
 }
 
@@ -104,6 +104,23 @@ func (ms *MSets) Find(kind Kind) (CardNumber, CardNumber, error) {
 		return 0, 0, nil
 	}
 	return l.Front().Value.(CardNumber), l.Back().Value.(CardNumber), nil
+}
+
+func sum(nums []CardNumber) int64 {
+	var res int64
+	for _, num := range nums {
+		res += int64(num)
+	}
+	return res
+}
+
+func (ms MSets) PrintDropped() string {
+	var dropped bytes.Buffer
+	dropped.WriteString("Dropped: \n")
+	for name, nums := range ms.dropped {
+		dropped.WriteString(fmt.Sprintf("%s: %d \n", name, sum(nums)))
+	}
+	return dropped.String()
 }
 
 func (ms *MSets) PrintStatus() string {
@@ -166,6 +183,6 @@ func (ms *MSets) GetValidNums(kind Kind, nums []CardNumber) (map[Kind][]CardNumb
 	return res, nil
 }
 
-func (ms *MSets) AddDroppedNum(kind Kind, num CardNumber) {
-	ms.dropped[kind] = append(ms.dropped[kind], num)
+func (ms *MSets) AddDroppedNum(key string, num CardNumber) {
+	ms.dropped[key] = append(ms.dropped[key], num)
 }

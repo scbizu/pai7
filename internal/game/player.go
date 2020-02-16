@@ -58,7 +58,7 @@ func (p *Player) PlayCard(card *Card) error {
 func (p *Player) DropCard(card *Card) {
 	p.Lock()
 	defer p.Unlock()
-	card.Drop()
+	card.Drop(p.Name)
 	delete(p.cards, card.Label())
 }
 
@@ -69,7 +69,7 @@ func (p *Player) DropFirstCard() *Card {
 		return nil
 	}
 	card := p.Cards()[0]
-	card.Drop()
+	card.Drop(p.Name)
 	delete(p.cards, card.Label())
 	return card
 }

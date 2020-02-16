@@ -91,9 +91,9 @@ func GetAvaliableCards(cards []*Card) ([]*Card, bool, error) {
 	return resCards, false, nil
 }
 
-func (c *Card) Drop() {
+func (c *Card) Drop(user string) {
 	getCardPool().AddDroppedNum(
-		c.kind,
+		user,
 		c.number,
 	)
 }

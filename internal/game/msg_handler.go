@@ -11,8 +11,7 @@ func NewP7Plugin() *P7Plugin {
 }
 
 // P7 impls mytg.Plugin interface
-type P7Plugin struct {
-}
+type P7Plugin struct{}
 
 // HandleMessage handles telegram game messages
 func (p *P7Plugin) HandleMessage(incommingMsg *api.Message) (api.Chattable, error) {

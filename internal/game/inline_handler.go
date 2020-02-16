@@ -158,5 +158,16 @@ func OnChosenInlineMsgHander(res *api.ChosenInlineResult, bot *api.BotAPI) error
 		}
 	}
 
+	if g.IsAllPlayerHasNoCard() {
+		g.Close()
+		if _, err := bot.Send(api.NewMessage(
+			g.GetChatID(),
+			i18n.NewGameMessageCloseCNZH(
+				g.GetEndReport(),
+			))); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
