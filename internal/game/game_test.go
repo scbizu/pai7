@@ -14,6 +14,7 @@ func init() {
 func TestPlayer(t *testing.T) {
 	g, err := NewGame("scnace", 123456)
 	require.NoError(t, err)
+	defer g.Close()
 	g.Join(NewPlayer(0, "scnace"))
 	members := g.GetMembers()
 	require.Equal(t, 1, len(members))
@@ -30,6 +31,7 @@ func TestPlayer(t *testing.T) {
 func TestPlayCard(t *testing.T) {
 	g, err := NewGame("scnace", 123456)
 	require.NoError(t, err)
+	defer g.Close()
 	g.Join(NewPlayer(0, "scnace"))
 	err = g.PlayerPlaysCard("scnace", &Card{kind: core.KindBlackHeart, number: core.CardNumber(7)})
 	require.NoError(t, err)
@@ -38,5 +40,19 @@ func TestPlayCard(t *testing.T) {
 	require.Contains(t, status, "Kind: ♣️, List:")
 	require.Contains(t, status, "Kind: ♦️, List:")
 	require.Contains(t, status, "Kind: ❤️, List:")
-	g.Close()
+}
+
+func TestDropCard(t *testing.T) {
+	g, err := NewGame("scnace", 123456)
+	require.NoError(t, err)
+	defer g.Close()
+	g.Join(NewPlayer(0, "scnace"))
+	// /start
+	g.Start()
+	rpt := g.GetEndReport()
+	require.Contains(t, rpt, "scnace: 0")
+	err = g.PlayerDropsCard("scnace", &Card{kind: core.KindBlackHeart, number: core.CardNumber(7)})
+	require.NoError(t, err)
+	rpt = g.GetEndReport()
+	require.Contains(t, rpt, "scnace: 7")
 }

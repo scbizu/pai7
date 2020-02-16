@@ -114,6 +114,12 @@ func sum(nums []CardNumber) int64 {
 	return res
 }
 
+func (ms *MSets) SetPlayers(names []string) {
+	for _, name := range names {
+		ms.dropped[name] = []CardNumber{}
+	}
+}
+
 func (ms MSets) PrintDropped() string {
 	var dropped bytes.Buffer
 	dropped.WriteString("Dropped: \n")

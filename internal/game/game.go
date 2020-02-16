@@ -93,13 +93,16 @@ func (g *Game) Start() {
 	g.isStart = true
 assign:
 	InitGame()
+	var pnames []string
 	for _, p := range g.players {
+		pnames = append(pnames, p.Name)
 		gotCards := AssignCards(len(g.GetMembers()))
 		p.AssignCards(gotCards)
 	}
 	if !IfAll7Assigned() {
 		goto assign
 	}
+	getCardPool().SetPlayers(pnames)
 }
 
 func (g *Game) GetPlayerCards(name string) []*Card {
