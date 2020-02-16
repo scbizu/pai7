@@ -28,8 +28,15 @@ func InlineHandler(msg api.Update) ([]interface{}, error) {
 		return []interface{}{item}, nil
 	}
 
-	var items []api.InlineQueryResultArticle
 	user := msg.InlineQuery.From.UserName
+	if g.GetCurrentPlayer().Name != user {
+		item := api.NewInlineQueryResultArticle(
+			"game_not_your_turn", "还没轮到你出牌哦", "还没轮到你出牌哦",
+		)
+		return []interface{}{item}, nil
+	}
+
+	var items []api.InlineQueryResultArticle
 	logrus.Debugf("Inline Handler: user: %s", user)
 	cards, isSkip, err := g.GetPlayerAvaliableCards(user)
 	if err != nil {
