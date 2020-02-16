@@ -83,6 +83,9 @@ func InlineHandler(msg api.Update) ([]interface{}, error) {
 }
 
 func encodeResultID(at ActionType, playerName string, card *Card, index int) string {
+	if card == nil {
+		return fmt.Sprintf("%d-%s-%d/%d-%d", at, playerName, 0, 0, index)
+	}
 	return fmt.Sprintf("%d-%s-%d/%d-%d", at, playerName, card.kind, card.number, index)
 }
 
